@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/store/cart'
 import { createClient } from '@/lib/supabase/client'
@@ -10,6 +10,11 @@ import { CheckCircle, Loader2 } from 'lucide-react'
 export default function CheckoutPage() {
   const router = useRouter()
   const { items, total, clearCart } = useCart()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    useCart.persist.rehydrate()
+    setMounted(true)
+  }, [])
   const subtotal = total()
   const [loading, setLoading] = useState(false)
   const [orderDone, setOrderDone] = useState<string | null>(null)
@@ -26,6 +31,8 @@ export default function CheckoutPage() {
 
   const deliveryFee = form.orderType === 'delivery' ? 100 : 0
   const grandTotal = subtotal + deliveryFee
+
+  if (!mounted) return null
 
   if (items.length === 0 && !orderDone) {
     router.push('/cart')

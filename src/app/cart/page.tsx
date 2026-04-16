@@ -3,11 +3,18 @@
 import Link from 'next/link'
 import { useCart } from '@/store/cart'
 import { Trash2, Plus, Minus, ShoppingCart, ArrowRight } from 'lucide-react'
+import { useState, useEffect } from 'react'
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, total, itemCount } = useCart()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => {
+    useCart.persist.rehydrate()
+    setMounted(true)
+  }, [])
   const count = itemCount()
   const subtotal = total()
+  if (!mounted) return null
   const deliveryFee = 0
 
   if (count === 0) {
