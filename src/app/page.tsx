@@ -11,14 +11,22 @@ const categories = [
   { slug: 'groceries', label: 'Groceries', icon: '🥦', color: 'from-green-500 to-emerald-600', desc: 'Veggies, fruits & daily essentials' },
 ]
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
-  const supabase = await createClient()
-  const { data: featured } = await supabase
-    .from('products')
-    .select('*, categories(*)')
-    .eq('featured', true)
-    .eq('in_stock', true)
-    .limit(8)
+  let featured: Product[] = []
+  try {
+    const supabase = await createClient()
+    const { data } = await supabase
+      .from('products')
+      .select('*, categories(*)')
+      .eq('featured', true)
+      .eq('in_stock', true)
+      .limit(8)
+    featured = (data as Product[]) ?? []
+  } catch {
+    // Will load at runtime
+  }
 
   return (
     <div>
@@ -86,7 +94,7 @@ export default async function HomePage() {
       </section>
 
       {/* Featured Products */}
-      {featured && featured.length > 0 && (
+      {featured.length > 0 && (
         <section className="max-w-6xl mx-auto px-4 pb-16">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-800">Featured Items</h2>
@@ -95,7 +103,7 @@ export default async function HomePage() {
             </span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {(featured as Product[]).map(product => (
+            {featured.map(product => (
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
