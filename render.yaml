@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: foodhub-machakos
+    runtime: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        value: https://mqgsgaayajbmltbenwqy.supabase.co
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xZ3NnYWF5YWpibWx0YmVud3F5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzMDk4NDksImV4cCI6MjA5MTg4NTg0OX0.IFIlDXmnUZjuXRP_s0FAc5X_1udGyM2lWUwERkctRB8
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1xZ3NnYWF5YWpibWx0YmVud3F5Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NjMwOTg0OSwiZXhwIjoyMDkxODg1ODQ5fQ.xLrCjRy6CO25kjVkSc6K5BskgEg9FZHrUJ8rK0XOe60
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3000"
+    autoDeploy: true
