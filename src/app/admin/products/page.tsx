@@ -1,16 +1,22 @@
-import { createAdminClient } from '@/lib/supabase/admin'
+'use client'
+
+import { useEffect, useState } from 'react'
+import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import ProductToggle from './ProductToggle'
 
-export const dynamic = 'force-dynamic'
+export default function AdminProductsPage() {
+  const [products, setProducts] = useState<Record<string, unknown>[]>([])
+  const [loading, setLoading] = useState(true)
 
-export default async function AdminProductsPage() {
-  const supabase = createAdminClient()
-  const { data: products } = await supabase
-    .from('products')
-    .select('*, categories(name, icon)')
-    .order('category_id')
-    .order('name')
+  useEffect(() => {
+    const supabase = createClient()
+    supabase.from('products').select('*, categories(name, icon)').order('name')
+      .then(({ data }) => {
+        setProducts(data as Record<string, unknown>[] ?? [])
+        setLoading(false)
+      })
+  }, [])
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -41,25 +47,26 @@ export default async function AdminProductsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
-              {products?.map(product => (
-                <tr key={product.id} className="hover:bg-gray-50">
+              {loading ? (
+                <tr><td colSpan={6} className="text-center py-10 text-gray-400">Loading products...</td></tr>
+              ) : products.map(product => (
+                <tr key={product.id as string} className="hover:bg-gray-50">
                   <td className="px-5 py-3">
-                    <div className="font-medium text-gray-800">{product.name}</div>
+                    <div className="font-medium text-gray-800">{product.name as string}</div>
                     {product.description && (
-                      <div className="text-xs text-gray-400 truncate max-w-[200px]">{product.description}</div>
+                      <div className="text-xs text-gray-400 truncate max-w-[200px]">{product.description as string}</div>
                     )}
                   </td>
                   <td className="px-5 py-3 text-gray-600">
-                    {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                    {(product.categories as any)?.icon} {(product.categories as any)?.name}
+                    {(product.categories as Record<string, string>)?.icon} {(product.categories as Record<string, string>)?.name}
                   </td>
                   <td className="px-5 py-3 font-bold text-green-700">KSh {Number(product.price).toLocaleString()}</td>
-                  <td className="px-5 py-3 text-gray-500">{product.unit}</td>
+                  <td className="px-5 py-3 text-gray-500">{product.unit as string}</td>
                   <td className="px-5 py-3">
-                    <ProductToggle productId={product.id} field="featured" value={product.featured} />
+                    <ProductToggle productId={product.id as string} field="featured" value={product.featured as boolean} />
                   </td>
                   <td className="px-5 py-3">
-                    <ProductToggle productId={product.id} field="in_stock" value={product.in_stock} />
+                    <ProductToggle productId={product.id as string} field="in_stock" value={product.in_stock as boolean} />
                   </td>
                 </tr>
               ))}

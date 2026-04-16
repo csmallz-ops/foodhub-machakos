@@ -1,8 +1,11 @@
+'use client'
+
 import Link from 'next/link'
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 import type { Product } from '@/types'
 import ProductCard from '@/components/ProductCard'
 import { ArrowRight, Star, Truck, Clock, Shield } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 const categories = [
   { slug: 'fast-food', label: 'Fast Food', icon: '🍔', color: 'from-orange-400 to-red-500', desc: 'Chips, burgers, chicken & more' },
@@ -11,22 +14,19 @@ const categories = [
   { slug: 'groceries', label: 'Groceries', icon: '🥦', color: 'from-green-500 to-emerald-600', desc: 'Veggies, fruits & daily essentials' },
 ]
 
-export const dynamic = 'force-dynamic'
+export default function HomePage() {
+  const [featured, setFeatured] = useState<Product[]>([])
 
-export default async function HomePage() {
-  let featured: Product[] = []
-  try {
-    const supabase = await createClient()
-    const { data } = await supabase
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
       .from('products')
       .select('*, categories(*)')
       .eq('featured', true)
       .eq('in_stock', true)
       .limit(8)
-    featured = (data as Product[]) ?? []
-  } catch {
-    // Will load at runtime
-  }
+      .then(({ data }) => setFeatured((data as Product[]) ?? []))
+  }, [])
 
   return (
     <div>
