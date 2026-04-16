@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { ShoppingCart, Menu, X, MapPin, Phone } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useCart } from '@/store/cart'
 
 const navLinks = [
@@ -14,7 +14,13 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [hydrated, setHydrated] = useState(false)
   const itemCount = useCart(s => s.itemCount())
+
+  useEffect(() => {
+    useCart.persist.rehydrate()
+    setHydrated(true)
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-md">
@@ -49,7 +55,7 @@ export default function Navbar() {
         <div className="flex items-center gap-3">
           <Link href="/cart" className="relative p-2 hover:bg-green-50 rounded-full transition">
             <ShoppingCart size={22} className="text-green-700" />
-            {itemCount > 0 && (
+            {hydrated && itemCount > 0 && (
               <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
                 {itemCount > 99 ? '99+' : itemCount}
               </span>

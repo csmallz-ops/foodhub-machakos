@@ -50,6 +50,9 @@ export const useCart = create<CartState>()(
       itemCount: () =>
         get().items.reduce((sum, i) => sum + i.quantity, 0),
     }),
-    { name: 'foodhub-cart' }
+    {
+      name: 'foodhub-cart',
+      skipHydration: true,
+    }
   )
 )
